@@ -1,58 +1,58 @@
-# AI 助手安裝指南（Agent Install Instructions）
+# AI 助手安装指南（Agent Install Instructions）
 
-當使用者對你說「幫我安裝 `wowidea-skill`，我的 Key 是 `sk-...`」時，請嚴格按以下步驟無交互執行。
+当用户对你说「帮我安装 `wowidea-skill`，我的 Key 是 `sk-...`」时，请严格按以下步骤无交互执行。
 
-## 安全鐵律（必須遵守）
+## 安全铁律（必须遵守）
 
-1. **禁止回顯密鑰**：絕對不要 `echo`、`printf`、`printenv` 或在回覆訊息中印出使用者的 `sk-...` 明文。
-2. **禁止寫入專案倉庫**：不要把密鑰寫進當前工作區的 `.env`、`README.md` 或任何 Git 追蹤檔案。安裝腳本會自動將密鑰以 `600` 權限存入使用者主目錄 `~/.config/wowidea/api_key` 與個人 Shell 啟動檔（`~/.zshenv`、`~/.zshrc`、`~/.bashrc`）。
-3. **零編譯、零 `sudo`**：本專案為純技能與零依賴腳本，不需要 `npm install`、不需要 `npm build`、禁止使用 `sudo`。
+1. **禁止回显密钥**：绝对不要 `echo`、`printf`、`printenv` 或在回复消息中打印用户的 `sk-...` 明文。
+2. **禁止写入项目仓库**：不要把密钥写进当前工作区的 `.env`、`README.md` 或任何 Git 跟踪文件。安装脚本会自动将密钥以 `600` 权限存入用户主目录 `~/.config/wowidea/api_key` 与个人 Shell 启动文件（`~/.zshenv`、`~/.zshrc`、`~/.bashrc`）。
+3. **零编译、零 `sudo`**：本项目为纯技能文档与零依赖脚本，不需要 `npm install`、不需要 `npm build`、禁止使用 `sudo`。
 
 ---
 
-## 步驟 1：檢查 Node.js（需 18+）
+## 步骤 1：检查 Node.js（需 18+）
 
 macOS / Linux：
 ```bash
 node -v
 ```
-若未安裝 Node.js 或主版本低於 18，請停下來提示使用者從 https://nodejs.org/ 安裝，不要使用 `sudo` 代裝。
+若未安装 Node.js 或主版本低于 18，请停下来提示用户从 https://nodejs.org/ 安装，不要使用 `sudo` 代装。
 
 ---
 
-## 步驟 2：執行一鍵安裝與環境配置
+## 步骤 2：执行一键安装与环境配置
 
-將下方單引號內的佔位符替換為使用者訊息中提供的真實 Key（不要印出該變數），直接執行：
+将下方单引号内的占位符替换为用户消息中提供的真实 Key（不要打印该变量），直接执行：
 
-### macOS / Linux（倉庫尚未在本地時）
+### macOS / Linux（仓库尚未在本地时）
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Salvatore0104/wowidea-skill/main/scripts/install.sh | WOWIDEA_API_KEY='使用者提供的Key' bash
+curl -fsSL https://raw.githubusercontent.com/Salvatore0104/wowidea-skill/main/scripts/install.sh | WOWIDEA_API_KEY='用户提供的Key' bash
 ```
-*(若分支為 `master` 返回 404，改用 `https://raw.githubusercontent.com/Salvatore0104/wowidea-skill/master/scripts/install.sh`，或先 `git clone --depth 1 https://github.com/Salvatore0104/wowidea-skill.git ~/.wowidea-skill` 再執行 `WOWIDEA_API_KEY='使用者提供的Key' bash ~/.wowidea-skill/scripts/install.sh </dev/null`)*
+*(若网络拉取 `raw.githubusercontent.com` 失败，可先执行 `git clone --depth 1 https://github.com/Salvatore0104/wowidea-skill.git ~/.wowidea-skill`，再执行 `WOWIDEA_API_KEY='用户提供的Key' bash ~/.wowidea-skill/scripts/install.sh </dev/null`)*
 
-### macOS / Linux（當前已在倉庫目錄內時）
+### macOS / Linux（当前已在仓库目录内时）
 ```bash
-WOWIDEA_API_KEY='使用者提供的Key' bash ./scripts/install.sh </dev/null
+WOWIDEA_API_KEY='用户提供的Key' bash ./scripts/install.sh </dev/null
 ```
 
 ### Windows PowerShell
 ```powershell
-$env:WOWIDEA_API_KEY = '使用者提供的Key'
+$env:WOWIDEA_API_KEY = '用户提供的Key'
 irm https://raw.githubusercontent.com/Salvatore0104/wowidea-skill/main/scripts/install.ps1 | iex
 ```
-*(若已在本地倉庫目錄內：`& "$PWD\scripts\install.ps1"`)*
+*(若已在本地仓库目录内：`& "$PWD\scripts\install.ps1"`)*
 
 ---
 
-## 步驟 3：確認安裝結果並回覆使用者
+## 步骤 3：确认安装结果并回复用户
 
-安裝腳本會自動完成三件事：
-1. 將倉庫同步至 `~/.wowidea-skill`。
-2. 將 `WOWIDEA_API_KEY` 寫入 `~/.config/wowidea/api_key`（權限 `600`）及 Shell 環境變數。
-3. 將 `skills/wowidea` 自動掛載到 `~/.claude/skills/wowidea`、`~/.cursor/skills/wowidea`、`~/.codex/skills/wowidea`、`~/.gemini/skills/wowidea`、`~/.gemini/config/skills/wowidea` 與 `~/.agents/skills/wowidea`。
-4. 調用 `GET /api/v1/balance` 驗證連通性與餘額。
+安装脚本会自动完成四件事：
+1. 将仓库同步至 `~/.wowidea-skill`。
+2. 将 `WOWIDEA_API_KEY` 写入 `~/.config/wowidea/api_key`（权限 `600`）及 Shell 环境变量。
+3. 将 `skills/wowidea` 自动挂载到 `~/.claude/skills/wowidea`、`~/.cursor/skills/wowidea`、`~/.codex/skills/wowidea`、`~/.gemini/skills/wowidea`、`~/.gemini/config/skills/wowidea` 与 `~/.agents/skills/wowidea`。
+4. 调用 `GET /api/v1/balance` 验证连通性与余额。
 
-最後向使用者簡短匯報：
-- 技能已掛載完成。
-- 帳戶餘額驗證是否通過（只報餘額數字，**不要複述 Key**）。
-- 現在可以直接在對話中要求生圖、改圖、生視頻或語音配音。
+最后向用户简短汇报：
+- 技能已挂载完成。
+- 账户余额验证是否通过（只报余额数字，**不要复述 Key**）。
+- 现在可以直接在对话中要求生图、改图、生视频或语音配音。

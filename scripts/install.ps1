@@ -1,5 +1,5 @@
 ﻿# Zero-dependency installer for wowidea-skill (Windows PowerShell).
-# Configures WOWIDEA_API_KEY safely and copies/links the skill into AI coding agents.
+# Configures WOWIDEA_API_KEY safely and copies the skill into AI coding agents.
 # Never echoes or logs WOWIDEA_API_KEY.
 
 $ErrorActionPreference = "Stop"
@@ -8,7 +8,7 @@ $Repo = if ($env:WOWIDEA_SKILL_REPO) { $env:WOWIDEA_SKILL_REPO } else { "https:/
 $Dest = if ($env:WOWIDEA_SKILL_HOME) { $env:WOWIDEA_SKILL_HOME } else { Join-Path $env:USERPROFILE ".wowidea-skill" }
 
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
-  throw "需要 Node.js 18 或更新版本（請從 https://nodejs.org/ 安裝）。"
+  throw "需要 Node.js 18 或更高版本（请从 https://nodejs.org/ 安装）。"
 }
 
 $Key = if ($env:WOWIDEA_API_KEY) { $env:WOWIDEA_API_KEY.Trim() } elseif ($env:EASYAI_API_KEY) { $env:EASYAI_API_KEY.Trim() } else { "" }
@@ -17,7 +17,7 @@ if (-not $Key -and (Test-Path $KeyFile)) {
   $Key = (Get-Content -Raw $KeyFile).Trim()
 }
 if (-not $Key) {
-  throw "未提供 WOWIDEA_API_KEY。請先設定 `$env:WOWIDEA_API_KEY='sk-...' 後重試。"
+  throw "未提供 WOWIDEA_API_KEY。请先设置 `$env:WOWIDEA_API_KEY='sk-...' 后重试。"
 }
 $env:WOWIDEA_API_KEY = $Key
 
@@ -30,7 +30,7 @@ if ($LocalRoot -and (Test-Path (Join-Path $LocalRoot "skills\wowidea\SKILL.md"))
   }
 } else {
   if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-    throw "未檢測到 git，請先安裝 git。"
+    throw "未检测到 git，请先安装 git。"
   }
   if (Test-Path (Join-Path $Dest ".git")) {
     git -C $Dest remote set-url origin $Repo
@@ -46,7 +46,7 @@ $CfgDir = Join-Path $env:USERPROFILE ".config\wowidea"
 New-Item -ItemType Directory -Force -Path $CfgDir | Out-Null
 Set-Content -NoNewline -Encoding UTF8 -Path $KeyFile -Value "$Key`n"
 [Environment]::SetEnvironmentVariable("WOWIDEA_API_KEY", $Key, "User")
-Write-Host "已將 WOWIDEA_API_KEY 寫入當前使用者環境變數與 ~/.config/wowidea/api_key。"
+Write-Host "已将 WOWIDEA_API_KEY 写入当前用户环境变量与 ~/.config/wowidea/api_key。"
 
 $SkillSrc = Join-Path $Dest "skills\wowidea"
 $Targets = @(
@@ -63,6 +63,6 @@ foreach ($Parent in $Targets) {
   if (Test-Path $TargetPath) { Remove-Item -Recurse -Force $TargetPath }
   Copy-Item -Recurse -Force $SkillSrc $TargetPath
 }
-Write-Host "已安裝 wowidea 技能至 Claude Code / Cursor / Codex / Gemini / Antigravity。"
+Write-Host "已安装 wowidea 技能至 Claude Code / Cursor / Codex / Gemini / Antigravity。"
 
 node (Join-Path $SkillSrc "scripts\wowidea.mjs") balance

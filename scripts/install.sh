@@ -15,16 +15,16 @@ if [[ -n "${BASH_SOURCE[0]:-}" && -f "${BASH_SOURCE[0]}" ]]; then
 fi
 
 die() {
-  printf 'Error: %s\n' "$1" >&2
+  printf '错误: %s\n' "$1" >&2
   exit "${2:-2}"
 }
 
 require_node() {
   if ! command -v node >/dev/null 2>&1; then
-    die "需要 Node.js 18 或更新版本（請從 https://nodejs.org/ 安裝）。" 2
+    die "需要 Node.js 18 或更高版本（请从 https://nodejs.org/ 安装）。" 2
   fi
   if ! node -e 'const maj=Number(process.versions.node.split(".")[0]); process.exit(maj>=18?0:1)' </dev/null; then
-    die "當前 Node.js 版本過低（$(node -v)），需要 Node.js 18+。" 2
+    die "当前 Node.js 版本过低（$(node -v)），需要 Node.js 18+。" 2
   fi
 }
 
@@ -38,15 +38,15 @@ read_api_key() {
     KEY="$(tr -d '\r\n' < "$HOME/.config/wowidea/api_key")"
   fi
   if [[ -z "$KEY" ]] && tty_ok; then
-    printf '請輸入 WOWIDEA_API_KEY（輸入不回顯）：' >/dev/tty
+    printf '请输入 WOWIDEA_API_KEY（输入不回显）：' >/dev/tty
     IFS= read -r -s KEY </dev/tty || true
     printf '\n' >/dev/tty
   fi
   if [[ -z "$KEY" ]]; then
-    die "未提供 WOWIDEA_API_KEY。請在命令前加上 WOWIDEA_API_KEY='sk-...' 後重試。" 3
+    die "未提供 WOWIDEA_API_KEY。请在命令前加上 WOWIDEA_API_KEY='sk-...' 后重试。" 3
   fi
   case "$KEY" in
-    *$'\n'*|*$'\r'*) die "WOWIDEA_API_KEY 不能包含換行。" 2 ;;
+    *$'\n'*|*$'\r'*) die "WOWIDEA_API_KEY 不能包含换行。" 2 ;;
   esac
   export WOWIDEA_API_KEY="$KEY"
 }
@@ -60,11 +60,11 @@ sync_skill_files() {
       [[ -f "$SCRIPT_SOURCE_DIR/INSTALL.md" ]] && cp "$SCRIPT_SOURCE_DIR/INSTALL.md" "$DEST/" || true
     fi
     chmod +x "$DEST/skills/wowidea/scripts/wowidea.mjs"
-    printf '已同步技能檔案至 %s\n' "$DEST"
+    printf '已同步技能文件至 %s\n' "$DEST"
     return 0
   fi
 
-  command -v git >/dev/null 2>&1 || die "未檢測到 git，請先安裝 git。" 2
+  command -v git >/dev/null 2>&1 || die "未检测到 git，请先安装 git。" 2
   export GIT_TERMINAL_PROMPT=0
   if [[ -d "$DEST/.git" ]]; then
     git -C "$DEST" remote set-url origin "$REPO" </dev/null
@@ -75,7 +75,7 @@ sync_skill_files() {
     git clone --depth 1 "$REPO" "$DEST" </dev/null
   fi
   chmod +x "$DEST/skills/wowidea/scripts/wowidea.mjs"
-  printf '已下載技能倉庫至 %s\n' "$DEST"
+  printf '已下载技能仓库至 %s\n' "$DEST"
 }
 
 persist_api_key() {
@@ -119,7 +119,7 @@ for (const name of rcFiles) {
     // ~/.config/wowidea/api_key remains authoritative fallback
   }
 }
-console.log("已將 WOWIDEA_API_KEY 安全寫入本機環境與 ~/.config/wowidea/api_key (權限 600)。");
+console.log("已将 WOWIDEA_API_KEY 安全写入本机环境与 ~/.config/wowidea/api_key (权限 600)。");
 EOF
 }
 
@@ -141,15 +141,15 @@ link_agent_skills() {
 
   mkdir -p "$HOME/.local/bin"
   ln -sfn "$src/scripts/wowidea.mjs" "$HOME/.local/bin/wowidea-api"
-  printf '已掛載 wowidea 技能至 Claude Code / Cursor / Codex / Gemini / Antigravity。\n'
+  printf '已挂载 wowidea 技能至 Claude Code / Cursor / Codex / Gemini / Antigravity。\n'
 }
 
 verify_connection() {
-  printf '正在驗證 API 連通性與帳戶餘額...\n'
+  printf '正在验证 API 连通性与账户余额...\n'
   if node "$DEST/skills/wowidea/scripts/wowidea.mjs" balance </dev/null; then
-    printf '安裝與驗證全部完成！AI 現在可以直接調用 Wowidea 生成圖片、視頻與語音。\n'
+    printf '安装与验证全部完成！AI 现在可以直接调用 Wowidea 生成图片、视频与语音。\n'
   else
-    printf '技能已安裝，但餘額校驗未通過，請前往 https://wowidea.top/user/api-key 檢查 Key 是否有效。\n' >&2
+    printf '技能已安装，但余额校验未通过，请前往 https://wowidea.top/user/api-key 检查 Key 是否有效。\n' >&2
   fi
 }
 
